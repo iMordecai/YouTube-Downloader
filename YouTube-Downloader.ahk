@@ -11,11 +11,15 @@ SetControlDelay, -1
 SendMode Input
 SetWorkingDir %A_ScriptDir%
 
-; check is youtube-dl.exe is present
+; check if youtube-dl.exe and ffmpeg.exe are present
 If !FileExist("youtube-dl.exe")
 	MsgBox, 4, YouTube Downloader,You will need to download youtube-dl.exe and save it in the script folder.`n`nDo you want to open the download webpage?
 IfMsgBox,Yes 
 	Run, http://ytdl-org.github.io/youtube-dl/download.html
+If !FileExist("ffmpeg.exe")
+	MsgBox, 4, YouTube Downloader,You will also need to download ffmpeg.exe and save it in the script folder.`n`nDo you want to open the download webpage?
+IfMsgBox,Yes 
+	Run, https://ffmpeg.zeranoe.com/builds/
 
 ; GUI
 Gui, YT:New
@@ -24,15 +28,15 @@ Gui, Add, Edit, 		Section w580        vLink hwndHED1	,
  Gui, Font, s12 Normal, Segoe UI
 Gui, Add, Checkbox,		Section xs 		vMP3 Checked0	, Audio Only
 Gui, Add, Checkbox,		ys x+3	 		vIsPlaylist Checked0 gCheckPlaylist	, Playlist?
-Gui, Add, Text,		ys x+3 			vPlayList		, Playlist Range:
-Gui, Add, Edit,		ys-2 x+3 w205 		vRange hwndHED2 Disabled
+ Gui, Add, Text,		ys x+3 			vPlayList		, Playlist Range:
+Gui, Add, Edit,			ys-2 x+3 w205 		vRange hwndHED2 Disabled
  Gui, Font, s12 Bold, Segoe UI
-Gui, Add, Button, 		ys hp w61			gAddLink		, Add
+Gui, Add, Button, 		ys hp w61		gAddLink		, Add
  Gui, Font, s12 Normal, Segoe UI
-Gui, Add, ListView,      xs w580 r5 		Grid Checked	, URL|Format|Range|Downloaded
+Gui, Add, ListView,     	 xs w580 r5 		Grid Checked	, URL|Format|Range|Downloaded
 Gui, Add, Button, 		Section xs 		gSelectFolder	, Output Folder
 Gui, Add, Text, 		ys+5 x+2 w288		; spacer
-Gui, Add, Button,		ys				gClear  vBtnC1	, Clear
+Gui, Add, Button,		ys			gClear  vBtnC1	, Clear
 Gui, Add, Button,		xp yp Hidden		gReally vBtnC2	, Really?
  Gui, Font, Bold, Segoe UI
 Gui, Add, Button, 		ys x+3 			gDownloadLinks	, Download
@@ -117,7 +121,7 @@ Loop, % LV_GetCount()
 			Else
 				RunWait, youtube-dl.exe --format best %URL%, %SelectedFolder%,Min
 		If (wFormat = "Audio")
-			RunWait, youtube-dl.exe -x --audio-format mp3 --yes-playlist %URL%, %SelectedFolder%,Min
+			RunWait, youtube-dl.exe --format best -x --audio-format mp3 --yes-playlist %URL%, %SelectedFolder%,Min
 		LV_Modify(A_Index,,URL,wFormat,Range,"yes")
 	}
 }
